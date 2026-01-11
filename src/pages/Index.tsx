@@ -6,6 +6,8 @@ import StatsCard from "@/components/StatsCard";
 import UnitSelector from "@/components/UnitSelector";
 import VipBadge from "@/components/VipBadge";
 import QRCodeModal from "@/components/QRCodeModal";
+import InstallPrompt from "@/components/InstallPrompt";
+import OfflineIndicator from "@/components/OfflineIndicator";
 import { useGeolocation } from "@/hooks/useGeolocation";
 
 type SpeedUnit = "kmh" | "mph" | "knots";
@@ -77,6 +79,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <InstallPrompt />
+      <OfflineIndicator />
       {/* Header */}
       <header className="flex items-center justify-between px-4 py-3 border-b border-border/50">
         <div className="flex items-center gap-2">
