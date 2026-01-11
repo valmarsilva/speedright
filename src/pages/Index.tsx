@@ -8,7 +8,9 @@ import VipBadge from "@/components/VipBadge";
 import QRCodeModal from "@/components/QRCodeModal";
 import InstallPrompt from "@/components/InstallPrompt";
 import OfflineIndicator from "@/components/OfflineIndicator";
+import LocationDisplay from "@/components/LocationDisplay";
 import { useGeolocation } from "@/hooks/useGeolocation";
+import { useReverseGeocode } from "@/hooks/useReverseGeocode";
 
 type SpeedUnit = "kmh" | "mph" | "knots";
 
@@ -40,12 +42,16 @@ const Index = () => {
     speed: speedMs,
     distance,
     accuracy,
+    latitude,
+    longitude,
     isTracking,
     error,
     startTracking,
     stopTracking,
     resetDistance,
   } = useGeolocation();
+
+  const { address, isLoading: isLoadingAddress } = useReverseGeocode(latitude, longitude);
 
   const maxSpeedLimit = useMemo(() => {
     switch (unit) {
@@ -138,6 +144,16 @@ const Index = () => {
           >
             <RotateCcw className="w-5 h-5" />
           </button>
+        </div>
+
+        {/* Location Display */}
+        <div className="animate-slide-up w-full flex justify-center" style={{ animationDelay: "0.35s" }}>
+          <LocationDisplay
+            street={address.street}
+            fullAddress={address.fullAddress}
+            isLoading={isLoadingAddress}
+            isTracking={isTracking}
+          />
         </div>
 
         {/* Error Message */}
