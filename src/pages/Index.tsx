@@ -9,6 +9,8 @@ import QRCodeModal from "@/components/QRCodeModal";
 import InstallPrompt from "@/components/InstallPrompt";
 import OfflineIndicator from "@/components/OfflineIndicator";
 import LocationDisplay from "@/components/LocationDisplay";
+import SpeedLimitSelector from "@/components/SpeedLimitSelector";
+import SpeedWarning from "@/components/SpeedWarning";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useReverseGeocode } from "@/hooks/useReverseGeocode";
 
@@ -37,6 +39,7 @@ const formatDistance = (meters: number): string => {
 const Index = () => {
   const [unit, setUnit] = useState<SpeedUnit>("kmh");
   const [maxSpeedRecorded, setMaxSpeedRecorded] = useState(0);
+  const [speedLimit, setSpeedLimit] = useState<number | null>(null);
   
   const {
     speed: speedMs,
@@ -87,6 +90,7 @@ const Index = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <InstallPrompt />
       <OfflineIndicator />
+      <SpeedWarning currentSpeed={currentSpeed} speedLimit={speedLimit} unit={unit} />
       {/* Header */}
       <header className="flex items-center justify-between px-4 py-3 border-b border-border/50">
         <div className="flex items-center gap-2">
@@ -105,7 +109,19 @@ const Index = () => {
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-6 gap-6">
         {/* Unit Selector */}
         <div className="animate-slide-up" style={{ animationDelay: "0.1s" }}>
-          <UnitSelector currentUnit={unit} onUnitChange={setUnit} />
+          <UnitSelector currentUnit={unit} onUnitChange={(newUnit) => {
+            setUnit(newUnit);
+            setSpeedLimit(null); // Reset limit when changing unit
+          }} />
+        </div>
+
+        {/* Speed Limit Selector */}
+        <div className="animate-slide-up" style={{ animationDelay: "0.15s" }}>
+          <SpeedLimitSelector 
+            currentLimit={speedLimit} 
+            onLimitChange={setSpeedLimit} 
+            unit={unit} 
+          />
         </div>
 
         {/* Speedometer */}
