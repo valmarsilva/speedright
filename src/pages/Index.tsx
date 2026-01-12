@@ -4,7 +4,7 @@ import SpeedDisplay from "@/components/SpeedDisplay";
 import SpeedometerGauge from "@/components/SpeedometerGauge";
 import StatsCard from "@/components/StatsCard";
 import UnitSelector from "@/components/UnitSelector";
-import VipBadge from "@/components/VipBadge";
+
 import QRCodeModal from "@/components/QRCodeModal";
 import InstallPrompt from "@/components/InstallPrompt";
 import OfflineIndicator from "@/components/OfflineIndicator";
@@ -99,10 +99,7 @@ const Index = () => {
             SPEEDOMETER
           </h1>
         </div>
-        <div className="flex items-center gap-3">
-          <QRCodeModal />
-          <VipBadge />
-        </div>
+        <QRCodeModal />
       </header>
 
       {/* Main Content */}
@@ -208,7 +205,7 @@ const Index = () => {
       {/* Footer */}
       <footer className="px-4 py-3 text-center border-t border-border/50">
         <p className="text-xs text-muted-foreground">
-          GPS de alta precisão • Sem propagandas • Suporte VIP
+          GPS de alta precisão • Sem propagandas
         </p>
       </footer>
     </div>
