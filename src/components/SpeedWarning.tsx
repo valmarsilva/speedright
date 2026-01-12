@@ -1,5 +1,6 @@
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useSpeedAlert } from "@/hooks/useSpeedAlert";
 
 interface SpeedWarningProps {
   currentSpeed: number;
@@ -9,10 +10,14 @@ interface SpeedWarningProps {
 
 const SpeedWarning = ({ currentSpeed, speedLimit, unit }: SpeedWarningProps) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(true);
   
   const unitLabel = unit === "kmh" ? "km/h" : unit === "mph" ? "mph" : "kn";
   const isOverLimit = speedLimit !== null && currentSpeed > speedLimit;
   const overBy = speedLimit !== null ? Math.round(currentSpeed - speedLimit) : 0;
+
+  // Sound alert hook
+  useSpeedAlert(isOverLimit, soundEnabled);
 
   useEffect(() => {
     if (isOverLimit) {
@@ -50,6 +55,17 @@ const SpeedWarning = ({ currentSpeed, speedLimit, unit }: SpeedWarningProps) => 
           +{overBy} {unitLabel} acima de {speedLimit} {unitLabel}
         </span>
       </div>
+      <button
+        onClick={() => setSoundEnabled(!soundEnabled)}
+        className="ml-2 p-1.5 rounded-full bg-secondary/50 hover:bg-secondary transition-colors"
+        title={soundEnabled ? "Desativar som" : "Ativar som"}
+      >
+        {soundEnabled ? (
+          <Volume2 className="w-4 h-4 text-foreground" />
+        ) : (
+          <VolumeX className="w-4 h-4 text-muted-foreground" />
+        )}
+      </button>
     </div>
   );
 };
