@@ -12,8 +12,11 @@ import LocationDisplay from "@/components/LocationDisplay";
 import MiniMap from "@/components/MiniMap";
 import SpeedLimitSelector from "@/components/SpeedLimitSelector";
 import SpeedWarning from "@/components/SpeedWarning";
+import OBD2Dashboard from "@/components/OBD2Dashboard";
+import OBD2ConnectButton from "@/components/OBD2ConnectButton";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useReverseGeocode } from "@/hooks/useReverseGeocode";
+import { useOBD2 } from "@/hooks/useOBD2";
 
 type SpeedUnit = "kmh" | "mph" | "knots";
 
@@ -56,6 +59,18 @@ const Index = () => {
   } = useGeolocation();
 
   const { address, isLoading: isLoadingAddress } = useReverseGeocode(latitude, longitude);
+
+  const {
+    isConnected: obd2Connected,
+    isConnecting: obd2Connecting,
+    isSupported: obd2Supported,
+    data: obd2Data,
+    deviceName: obd2DeviceName,
+    error: obd2Error,
+    connect: connectOBD2,
+    disconnect: disconnectOBD2,
+    connectDemo: connectOBD2Demo,
+  } = useOBD2();
 
   const maxSpeedLimit = useMemo(() => {
     switch (unit) {
@@ -100,7 +115,19 @@ const Index = () => {
             SPEEDOMETER
           </h1>
         </div>
-        <QRCodeModal />
+        <div className="flex items-center gap-2">
+          <OBD2ConnectButton
+            isConnected={obd2Connected}
+            isConnecting={obd2Connecting}
+            isSupported={obd2Supported}
+            deviceName={obd2DeviceName}
+            error={obd2Error}
+            onConnect={connectOBD2}
+            onDisconnect={disconnectOBD2}
+            onConnectDemo={connectOBD2Demo}
+          />
+          <QRCodeModal />
+        </div>
       </header>
 
       {/* Main Content */}
@@ -178,6 +205,13 @@ const Index = () => {
             isTracking={isTracking}
           />
         </div>
+
+        {/* OBD-II Dashboard */}
+        {obd2Connected && (
+          <div className="animate-slide-up w-full flex justify-center" style={{ animationDelay: "0.38s" }}>
+            <OBD2Dashboard data={obd2Data} isConnected={obd2Connected} />
+          </div>
+        )}
 
         {/* Error Message */}
         {error && (
