@@ -9,6 +9,7 @@ import QRCodeModal from "@/components/QRCodeModal";
 import InstallPrompt from "@/components/InstallPrompt";
 import OfflineIndicator from "@/components/OfflineIndicator";
 import LocationDisplay from "@/components/LocationDisplay";
+import MiniMap from "@/components/MiniMap";
 import SpeedLimitSelector from "@/components/SpeedLimitSelector";
 import SpeedWarning from "@/components/SpeedWarning";
 import { useGeolocation } from "@/hooks/useGeolocation";
@@ -165,6 +166,15 @@ const Index = () => {
             street={address.street}
             fullAddress={address.fullAddress}
             isLoading={isLoadingAddress}
+            isTracking={isTracking}
+          />
+        </div>
+
+        {/* Mini Map */}
+        <div className="animate-slide-up w-full max-w-md" style={{ animationDelay: "0.37s" }}>
+          <MiniMap
+            latitude={latitude}
+            longitude={longitude}
             isTracking={isTracking}
           />
         </div>
