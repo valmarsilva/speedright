@@ -14,9 +14,11 @@ import SpeedLimitSelector from "@/components/SpeedLimitSelector";
 import SpeedWarning from "@/components/SpeedWarning";
 import OBD2Dashboard from "@/components/OBD2Dashboard";
 import OBD2ConnectButton from "@/components/OBD2ConnectButton";
+import EngineAlerts from "@/components/EngineAlerts";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useReverseGeocode } from "@/hooks/useReverseGeocode";
 import { useOBD2 } from "@/hooks/useOBD2";
+import { useEngineAlerts } from "@/hooks/useEngineAlerts";
 
 type SpeedUnit = "kmh" | "mph" | "knots";
 
@@ -72,6 +74,8 @@ const Index = () => {
     connectDemo: connectOBD2Demo,
   } = useOBD2();
 
+  const { activeAlerts } = useEngineAlerts(obd2Data, obd2Connected);
+
   const maxSpeedLimit = useMemo(() => {
     switch (unit) {
       case "kmh": return 200;
@@ -107,7 +111,7 @@ const Index = () => {
       <InstallPrompt />
       <OfflineIndicator />
       <SpeedWarning currentSpeed={currentSpeed} speedLimit={speedLimit} unit={unit} />
-      {/* Header */}
+      <EngineAlerts alerts={activeAlerts} />
       <header className="flex items-center justify-between px-4 py-3 border-b border-border/50">
         <div className="flex items-center gap-2">
           <Gauge className="w-6 h-6 text-primary pulse-glow" />
