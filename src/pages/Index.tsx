@@ -4,7 +4,6 @@ import SpeedDisplay from "@/components/SpeedDisplay";
 import SpeedometerGauge from "@/components/SpeedometerGauge";
 import StatsCard from "@/components/StatsCard";
 import UnitSelector from "@/components/UnitSelector";
-
 import QRCodeModal from "@/components/QRCodeModal";
 import InstallPrompt from "@/components/InstallPrompt";
 import OfflineIndicator from "@/components/OfflineIndicator";
@@ -15,30 +14,28 @@ import SpeedWarning from "@/components/SpeedWarning";
 import OBD2Dashboard from "@/components/OBD2Dashboard";
 import OBD2ConnectButton from "@/components/OBD2ConnectButton";
 import EngineAlerts from "@/components/EngineAlerts";
+import EngineTypeSelector from "@/components/EngineTypeSelector";
+import DieselDashboard from "@/components/DieselDashboard";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useReverseGeocode } from "@/hooks/useReverseGeocode";
 import { useOBD2 } from "@/hooks/useOBD2";
+import { useDieselOBD2 } from "@/hooks/useDieselOBD2";
 import { useEngineAlerts } from "@/hooks/useEngineAlerts";
+import type { EngineType, CylinderCount } from "@/types/engine";
 
 type SpeedUnit = "kmh" | "mph" | "knots";
 
 const convertSpeed = (speedMs: number, unit: SpeedUnit): number => {
   switch (unit) {
-    case "kmh":
-      return speedMs * 3.6;
-    case "mph":
-      return speedMs * 2.237;
-    case "knots":
-      return speedMs * 1.944;
-    default:
-      return speedMs * 3.6;
+    case "kmh": return speedMs * 3.6;
+    case "mph": return speedMs * 2.237;
+    case "knots": return speedMs * 1.944;
+    default: return speedMs * 3.6;
   }
 };
 
 const formatDistance = (meters: number): string => {
-  if (meters >= 1000) {
-    return `${(meters / 1000).toFixed(2)} km`;
-  }
+  if (meters >= 1000) return `${(meters / 1000).toFixed(2)} km`;
   return `${Math.round(meters)} m`;
 };
 
@@ -46,35 +43,31 @@ const Index = () => {
   const [unit, setUnit] = useState<SpeedUnit>("kmh");
   const [maxSpeedRecorded, setMaxSpeedRecorded] = useState(0);
   const [speedLimit, setSpeedLimit] = useState<number | null>(null);
-  
+  const [engineType, setEngineType] = useState<EngineType>("gasoline");
+  const [cylinders, setCylinders] = useState<CylinderCount>(4);
+
   const {
-    speed: speedMs,
-    distance,
-    accuracy,
-    latitude,
-    longitude,
-    isTracking,
-    error,
-    startTracking,
-    stopTracking,
-    resetDistance,
+    speed: speedMs, distance, accuracy, latitude, longitude,
+    isTracking, error, startTracking, stopTracking, resetDistance,
   } = useGeolocation();
 
   const { address, isLoading: isLoadingAddress } = useReverseGeocode(latitude, longitude);
 
   const {
-    isConnected: obd2Connected,
-    isConnecting: obd2Connecting,
-    isSupported: obd2Supported,
-    data: obd2Data,
-    deviceName: obd2DeviceName,
-    error: obd2Error,
-    connect: connectOBD2,
-    disconnect: disconnectOBD2,
+    isConnected: obd2Connected, isConnecting: obd2Connecting,
+    isSupported: obd2Supported, data: obd2Data,
+    deviceName: obd2DeviceName, error: obd2Error,
+    connect: connectOBD2, disconnect: disconnectOBD2,
     connectDemo: connectOBD2Demo,
   } = useOBD2();
 
-  const { activeAlerts } = useEngineAlerts(obd2Data, obd2Connected);
+  const {
+    dieselData, startDemoMode: startDieselDemo, stopDemoMode: stopDieselDemo,
+  } = useDieselOBD2(cylinders);
+
+  const { activeAlerts } = useEngineAlerts(
+    obd2Data, obd2Connected, true, engineType, dieselData, cylinders
+  );
 
   const maxSpeedLimit = useMemo(() => {
     switch (unit) {
@@ -87,23 +80,36 @@ const Index = () => {
 
   const currentSpeed = useMemo(() => {
     const converted = convertSpeed(speedMs, unit);
-    if (converted > maxSpeedRecorded) {
-      setMaxSpeedRecorded(converted);
-    }
+    if (converted > maxSpeedRecorded) setMaxSpeedRecorded(converted);
     return converted;
   }, [speedMs, unit, maxSpeedRecorded]);
 
   const handleToggleTracking = () => {
-    if (isTracking) {
-      stopTracking();
-    } else {
-      startTracking();
-    }
+    if (isTracking) stopTracking();
+    else startTracking();
   };
 
   const handleReset = () => {
     resetDistance();
     setMaxSpeedRecorded(0);
+  };
+
+  const handleConnectDemo = () => {
+    connectOBD2Demo();
+    if (engineType === "diesel") startDieselDemo();
+  };
+
+  const handleDisconnect = () => {
+    disconnectOBD2();
+    stopDieselDemo();
+  };
+
+  const handleEngineTypeChange = (type: EngineType) => {
+    setEngineType(type);
+    if (obd2Connected) {
+      if (type === "diesel") startDieselDemo();
+      else stopDieselDemo();
+    }
   };
 
   return (
@@ -127,30 +133,35 @@ const Index = () => {
             deviceName={obd2DeviceName}
             error={obd2Error}
             onConnect={connectOBD2}
-            onDisconnect={disconnectOBD2}
-            onConnectDemo={connectOBD2Demo}
+            onDisconnect={handleDisconnect}
+            onConnectDemo={handleConnectDemo}
           />
           <QRCodeModal />
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-6 gap-6">
+        {/* Engine Type Selector */}
+        <div className="animate-slide-up" style={{ animationDelay: "0.05s" }}>
+          <EngineTypeSelector
+            engineType={engineType}
+            cylinders={cylinders}
+            onEngineTypeChange={handleEngineTypeChange}
+            onCylindersChange={setCylinders}
+          />
+        </div>
+
         {/* Unit Selector */}
         <div className="animate-slide-up" style={{ animationDelay: "0.1s" }}>
           <UnitSelector currentUnit={unit} onUnitChange={(newUnit) => {
             setUnit(newUnit);
-            setSpeedLimit(null); // Reset limit when changing unit
+            setSpeedLimit(null);
           }} />
         </div>
 
         {/* Speed Limit Selector */}
         <div className="animate-slide-up" style={{ animationDelay: "0.15s" }}>
-          <SpeedLimitSelector 
-            currentLimit={speedLimit} 
-            onLimitChange={setSpeedLimit} 
-            unit={unit} 
-          />
+          <SpeedLimitSelector currentLimit={speedLimit} onLimitChange={setSpeedLimit} unit={unit} />
         </div>
 
         {/* Speedometer */}
@@ -171,17 +182,7 @@ const Index = () => {
                 : "bg-primary text-primary-foreground hover:bg-primary/90 speedometer-glow"
             }`}
           >
-            {isTracking ? (
-              <>
-                <Pause className="w-5 h-5" />
-                Parar
-              </>
-            ) : (
-              <>
-                <Play className="w-5 h-5" />
-                Iniciar
-              </>
-            )}
+            {isTracking ? <><Pause className="w-5 h-5" />Parar</> : <><Play className="w-5 h-5" />Iniciar</>}
           </button>
           <button
             onClick={handleReset}
@@ -193,31 +194,29 @@ const Index = () => {
 
         {/* Location Display */}
         <div className="animate-slide-up w-full flex justify-center" style={{ animationDelay: "0.35s" }}>
-          <LocationDisplay
-            street={address.street}
-            fullAddress={address.fullAddress}
-            isLoading={isLoadingAddress}
-            isTracking={isTracking}
-          />
+          <LocationDisplay street={address.street} fullAddress={address.fullAddress} isLoading={isLoadingAddress} isTracking={isTracking} />
         </div>
 
         {/* Mini Map */}
         <div className="animate-slide-up w-full max-w-md" style={{ animationDelay: "0.37s" }}>
-          <MiniMap
-            latitude={latitude}
-            longitude={longitude}
-            isTracking={isTracking}
-          />
+          <MiniMap latitude={latitude} longitude={longitude} isTracking={isTracking} />
         </div>
 
-        {/* OBD-II Dashboard */}
+        {/* OBD-II Dashboard (gasoline gauges) */}
         {obd2Connected && (
           <div className="animate-slide-up w-full flex justify-center" style={{ animationDelay: "0.38s" }}>
             <OBD2Dashboard data={obd2Data} isConnected={obd2Connected} />
           </div>
         )}
 
-        {/* Error Message */}
+        {/* Diesel Dashboard */}
+        {obd2Connected && engineType === "diesel" && (
+          <div className="animate-slide-up w-full flex justify-center" style={{ animationDelay: "0.39s" }}>
+            <DieselDashboard data={dieselData} cylinders={cylinders} isConnected={obd2Connected} />
+          </div>
+        )}
+
+        {/* Error */}
         {error && (
           <div className="px-4 py-2 rounded-lg bg-destructive/20 border border-destructive/50 text-destructive text-sm animate-fade-in">
             {error}
@@ -226,31 +225,13 @@ const Index = () => {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-3 w-full max-w-md animate-slide-up" style={{ animationDelay: "0.4s" }}>
-          <StatsCard
-            icon={Navigation}
-            label="Distância"
-            value={formatDistance(distance)}
-          />
-          <StatsCard
-            icon={Gauge}
-            label="Velocidade Máx"
-            value={`${Math.round(maxSpeedRecorded)}`}
-            subValue={unit === "kmh" ? "km/h" : unit === "mph" ? "mph" : "kn"}
-          />
-          <StatsCard
-            icon={MapPin}
-            label="Precisão GPS"
-            value={accuracy > 0 ? `±${Math.round(accuracy)}m` : "--"}
-          />
-          <StatsCard
-            icon={Timer}
-            label="Status"
-            value={isTracking ? "Ativo" : "Parado"}
-          />
+          <StatsCard icon={Navigation} label="Distância" value={formatDistance(distance)} />
+          <StatsCard icon={Gauge} label="Velocidade Máx" value={`${Math.round(maxSpeedRecorded)}`} subValue={unit === "kmh" ? "km/h" : unit === "mph" ? "mph" : "kn"} />
+          <StatsCard icon={MapPin} label="Precisão GPS" value={accuracy > 0 ? `±${Math.round(accuracy)}m` : "--"} />
+          <StatsCard icon={Timer} label="Status" value={isTracking ? "Ativo" : "Parado"} />
         </div>
       </main>
 
-      {/* Footer */}
       <footer className="px-4 py-3 text-center border-t border-border/50">
         <p className="text-xs text-muted-foreground">
           GPS de alta precisão • Sem propagandas

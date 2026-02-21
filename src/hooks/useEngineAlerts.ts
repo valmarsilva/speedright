@@ -1,5 +1,8 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 import { OBD2Data } from "@/hooks/useOBD2";
+import type { DieselData } from "@/hooks/useDieselOBD2";
+import type { EngineType, CylinderCount } from "@/types/engine";
+import { DIESEL_THRESHOLDS, GASOLINE_THRESHOLDS } from "@/types/engine";
 
 export interface EngineAlert {
   id: string;
@@ -10,25 +13,14 @@ export interface EngineAlert {
   level: "warning" | "danger";
 }
 
-interface AlertThresholds {
-  rpmWarning: number;
-  rpmDanger: number;
-  coolantWarning: number;
-  coolantDanger: number;
-  oilWarning: number;
-  oilDanger: number;
-}
-
-const DEFAULT_THRESHOLDS: AlertThresholds = {
-  rpmWarning: 5500,
-  rpmDanger: 6500,
-  coolantWarning: 100,
-  coolantDanger: 110,
-  oilWarning: 120,
-  oilDanger: 135,
-};
-
-export const useEngineAlerts = (data: OBD2Data, isConnected: boolean, soundEnabled: boolean = true) => {
+export const useEngineAlerts = (
+  data: OBD2Data,
+  isConnected: boolean,
+  soundEnabled: boolean = true,
+  engineType: EngineType = "gasoline",
+  dieselData?: DieselData,
+  cylinders: CylinderCount = 4,
+) => {
   const [activeAlerts, setActiveAlerts] = useState<EngineAlert[]>([]);
   const audioContextRef = useRef<AudioContext | null>(null);
   const lastAlertSoundRef = useRef<number>(0);
@@ -91,24 +83,56 @@ export const useEngineAlerts = (data: OBD2Data, isConnected: boolean, soundEnabl
     }
 
     const alerts: EngineAlert[] = [];
-    const t = DEFAULT_THRESHOLDS;
 
-    if (data.rpm >= t.rpmDanger) {
-      alerts.push({ id: "rpm", label: "RPM CRÍTICO", value: Math.round(data.rpm), unit: "rpm", threshold: t.rpmDanger, level: "danger" });
-    } else if (data.rpm >= t.rpmWarning) {
-      alerts.push({ id: "rpm", label: "RPM Alto", value: Math.round(data.rpm), unit: "rpm", threshold: t.rpmWarning, level: "warning" });
+    // Common alerts (RPM, coolant, oil)
+    const rpmWarning = engineType === "diesel" ? DIESEL_THRESHOLDS[cylinders].rpmWarning : GASOLINE_THRESHOLDS.rpmWarning;
+    const rpmDanger = engineType === "diesel" ? DIESEL_THRESHOLDS[cylinders].rpmDanger : GASOLINE_THRESHOLDS.rpmDanger;
+
+    if (data.rpm >= rpmDanger) {
+      alerts.push({ id: "rpm", label: "RPM CRÍTICO", value: Math.round(data.rpm), unit: "rpm", threshold: rpmDanger, level: "danger" });
+    } else if (data.rpm >= rpmWarning) {
+      alerts.push({ id: "rpm", label: "RPM Alto", value: Math.round(data.rpm), unit: "rpm", threshold: rpmWarning, level: "warning" });
     }
 
-    if (data.coolantTemp >= t.coolantDanger) {
-      alerts.push({ id: "coolant", label: "SUPERAQUECIMENTO!", value: Math.round(data.coolantTemp), unit: "°C", threshold: t.coolantDanger, level: "danger" });
-    } else if (data.coolantTemp >= t.coolantWarning) {
-      alerts.push({ id: "coolant", label: "Temp. Água Alta", value: Math.round(data.coolantTemp), unit: "°C", threshold: t.coolantWarning, level: "warning" });
+    if (data.coolantTemp >= 110) {
+      alerts.push({ id: "coolant", label: "SUPERAQUECIMENTO!", value: Math.round(data.coolantTemp), unit: "°C", threshold: 110, level: "danger" });
+    } else if (data.coolantTemp >= 100) {
+      alerts.push({ id: "coolant", label: "Temp. Água Alta", value: Math.round(data.coolantTemp), unit: "°C", threshold: 100, level: "warning" });
     }
 
-    if (data.oilTemp >= t.oilDanger) {
-      alerts.push({ id: "oil", label: "ÓLEO CRÍTICO!", value: Math.round(data.oilTemp), unit: "°C", threshold: t.oilDanger, level: "danger" });
-    } else if (data.oilTemp >= t.oilWarning) {
-      alerts.push({ id: "oil", label: "Temp. Óleo Alta", value: Math.round(data.oilTemp), unit: "°C", threshold: t.oilWarning, level: "warning" });
+    if (data.oilTemp >= 135) {
+      alerts.push({ id: "oil", label: "ÓLEO CRÍTICO!", value: Math.round(data.oilTemp), unit: "°C", threshold: 135, level: "danger" });
+    } else if (data.oilTemp >= 120) {
+      alerts.push({ id: "oil", label: "Temp. Óleo Alta", value: Math.round(data.oilTemp), unit: "°C", threshold: 120, level: "warning" });
+    }
+
+    // Diesel-specific alerts
+    if (engineType === "diesel" && dieselData) {
+      const dt = DIESEL_THRESHOLDS[cylinders];
+
+      if (dieselData.turboBoost >= dt.turboBoostDanger) {
+        alerts.push({ id: "turbo", label: "TURBO CRÍTICO!", value: dieselData.turboBoost, unit: "bar", threshold: dt.turboBoostDanger, level: "danger" });
+      } else if (dieselData.turboBoost >= dt.turboBoostWarning) {
+        alerts.push({ id: "turbo", label: "Pressão Turbo Alta", value: dieselData.turboBoost, unit: "bar", threshold: dt.turboBoostWarning, level: "warning" });
+      }
+
+      if (dieselData.egt >= dt.egtDanger) {
+        alerts.push({ id: "egt", label: "EGT CRÍTICO!", value: Math.round(dieselData.egt), unit: "°C", threshold: dt.egtDanger, level: "danger" });
+      } else if (dieselData.egt >= dt.egtWarning) {
+        alerts.push({ id: "egt", label: "EGT Alta", value: Math.round(dieselData.egt), unit: "°C", threshold: dt.egtWarning, level: "warning" });
+      }
+
+      if (dieselData.railPressure >= dt.railPressureDanger) {
+        alerts.push({ id: "rail", label: "RAIL CRÍTICO!", value: Math.round(dieselData.railPressure), unit: "bar", threshold: dt.railPressureDanger, level: "danger" });
+      } else if (dieselData.railPressure >= dt.railPressureWarning) {
+        alerts.push({ id: "rail", label: "Pressão Rail Alta", value: Math.round(dieselData.railPressure), unit: "bar", threshold: dt.railPressureWarning, level: "warning" });
+      }
+
+      if (dieselData.dpfStatus === "blocked") {
+        alerts.push({ id: "dpf", label: "DPF BLOQUEADO!", value: dieselData.dpfPressure, unit: "kPa", threshold: 12, level: "danger" });
+      } else if (dieselData.dpfStatus === "regenerating") {
+        alerts.push({ id: "dpf", label: "DPF Regenerando", value: dieselData.dpfTemp, unit: "°C", threshold: 550, level: "warning" });
+      }
     }
 
     setActiveAlerts(alerts);
@@ -117,7 +141,7 @@ export const useEngineAlerts = (data: OBD2Data, isConnected: boolean, soundEnabl
       const hasDanger = alerts.some(a => a.level === "danger");
       playAlertSound(hasDanger ? "danger" : "warning");
     }
-  }, [data.rpm, data.coolantTemp, data.oilTemp, isConnected, playAlertSound]);
+  }, [data.rpm, data.coolantTemp, data.oilTemp, isConnected, engineType, cylinders, dieselData, playAlertSound]);
 
   useEffect(() => {
     return () => { audioContextRef.current?.close(); };
