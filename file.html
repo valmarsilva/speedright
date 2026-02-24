@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Itajaimetal Usinagem | Torno, Solda e Prototipagem 3D</title>
+
+  <meta name="description" content="Itajaimetal em Itajaí-SC: torno mecânico, solda MIG/TIG/elétrica, prototipagem 3D, reparo de peças e socorro mecânico. Orçamentos via WhatsApp.">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root{
+      --azul-escuro:#0a2342;
+      --amarelo:#ffcc00;
+      --cinza-claro:#f4f4f4;
+      --verde-whatsapp:#25d366;
+      --fonte-principal:'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    *{ box-sizing:border-box; }
+    body{ font-family:var(--fonte-principal); margin:0; padding:0; color:#333; line-height:1.6; background:#fff; }
+
+    header{
+      background:var(--azul-escuro);
+      color:#fff;
+      padding:16px 5%;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      position:sticky;
+      top:0;
+      z-index:1000;
+      border-bottom:4px solid var(--amarelo);
+      gap: 18px;
+    }
+
+    .logo-container{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      position:relative;
+      padding:8px 10px;
+      border-radius:12px;
+      overflow:hidden;
+      isolation:isolate;
+      min-height: 54px;
+    }
+    .logo-container img{
+      width:50px;
+      height:auto;
+      position:relative;
+      z-index:2;
+      display:block;
+    }
+    .logo-text{
+      font-size:24px;
+      font-weight:900;
+      letter-spacing:0.7px;
+      position:relative;
+      z-index:2;
+      text-transform:uppercase;
+      text-shadow:0 2px 12px rgba(0,0,0,.35);
+      white-space: nowrap;
+    }
+
+    /* Faíscas */
+    .sparks{
+      position:absolute;
+      inset:-18px;
+      z-index:1;
+      pointer-events:none;
+      opacity:.95;
+    }
+    .spark{
+      position:absolute;
+      left:-30px;
+      top:50%;
+      width:160px;
+      height:3px;
+      border-radius:999px;
+      transform-origin:10px 50%;
+      transform:translateY(-50%) rotate(-22deg);
+      opacity:0;
+      background:linear-gradient(90deg,
+        rgba(255,204,0,0) 0%,
+        rgba(255,204,0,.95) 45%,
+        rgba(255,106,0,.95) 75%,
+        rgba(255,106,0,0) 100%);
+      filter:drop-shadow(0 0 6px rgba(255,204,0,.55));
+      animation:sparkShoot 1.25s linear infinite;
+    }
+    .spark.s2{ top:38%; width:190px; height:2px; transform:translateY(-50%) rotate(-16deg); animation-delay:.10s; }
+    .spark.s3{ top:62%; width:210px; height:3px; transform:translateY(-50%) rotate(-28deg); animation-delay:.20s; }
+    .spark.s4{ top:45%; width:140px; height:2px; transform:translateY(-50%) rotate(-10deg); animation-delay:.34s; }
+    .spark.s5{ top:70%; width:230px; height:3px; transform:translateY(-50%) rotate(-32deg); animation-delay:.48s; }
+
+    .ember{
+      position:absolute;
+      left:10px;
+      top:50%;
+      width:4px;
+      height:4px;
+      border-radius:50%;
+      background:radial-gradient(circle, #ffd27a 0%, #ff6a00 60%, rgba(255,106,0,0) 100%);
+      filter:drop-shadow(0 0 8px rgba(255,204,0,.7));
+      opacity:0;
+      animation:emberFly 1.25s linear infinite;
+    }
+    .ember.e2{ animation-delay:.18s; top:35%; }
+    .ember.e3{ animation-delay:.30s; top:65%; }
+    .ember.e4{ animation-delay:.44s; top:52%; }
+
+    @keyframes sparkShoot{
+      0%   { opacity:0; transform:translate(-10px,-50%) rotate(-22deg) scaleX(.6); }
+      8%   { opacity:1; }
+      38%  { opacity:1; transform:translate(210px,-50%) rotate(-22deg) scaleX(1); }
+      60%  { opacity:0; transform:translate(260px,-50%) rotate(-22deg) scaleX(1.05); }
+      100% { opacity:0; transform:translate(260px,-50%) rotate(-22deg) scaleX(1.05); }
+    }
+    @keyframes emberFly{
+      0%   { opacity:0; transform:translate(0,-50%) scale(1); }
+      12%  { opacity:1; }
+      45%  { opacity:1; transform:translate(220px,-95px) scale(.9); }
+      70%  { opacity:0; transform:translate(310px,-140px) scale(.7); }
+      100% { opacity:0; transform:translate(310px,-140px) scale(.7); }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .spark,.ember{ animation:none; opacity:.25; }
+    }
+
+    .whats-topo{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:800;
+      color:#fff;
+      opacity:.95;
+      white-space:nowrap;
+    }
+    .whats-topo i{ color:var(--amarelo); }
+
+    /* HERO */
+    .hero{
+      background:
+        linear-gradient(rgba(10,35,66,.82), rgba(10,35,66,.82)),
+        url('https://images.unsplash.com/photo-1537462715879-360eeb61a0ad?auto=format&fit=crop&w=1600&q=80');
+      background-size:cover;
+      background-position:center;
+      color:#fff;
+      padding:110px 5% 70px;
+      text-align:center;
+    }
+    .hero h1{ font-size:3rem; margin:0 0 10px; }
+    .hero p{ font-size:1.35rem; margin:0 0 26px; color:var(--amarelo); font-weight:600; }
+
+    .hero-actions{
+      display:flex;
+      gap: 12px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top: 18px;
+    }
+
+    .btn{
+      text-decoration:none;
+      border-radius:10px;
+      font-weight:900;
+      font-size:1.05rem;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:12px;
+      padding:16px 22px;
+      transition:.25s;
+      box-shadow:0 6px 18px rgba(0,0,0,.28);
+      border:1px solid rgba(255,255,255,.12);
+    }
+    .btn:hover{ transform: translateY(-1px); filter: brightness(1.05); }
+
+    .btn-whats{ background:var(--verde-whatsapp); color:#fff; }
+    .btn-outline{ background:rgba(255,255,255,.06); color:#fff; }
+
+    /* SEÇÕES */
+    .servicos{ padding:80px 5%; background:var(--cinza-claro); text-align:center; }
+    .servicos h2{ margin:0 0 50px; color:var(--azul-escuro); font-size:2.2rem; }
+
+    .grid-servicos{ display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:22px; }
+    .card{
+      background:#fff;
+      padding:34px 22px;
+      border-radius:14px;
+      box-shadow:0 10px 24px rgba(0,0,0,.06);
+      transition:.25s;
+      border-bottom:5px solid transparent;
+      text-align:left;
+    }
+    .card:hover{ border-bottom-color:var(--amarelo); transform:translateY(-6px); }
+    .card i{ font-size:2.6rem; color:var(--azul-escuro); margin-bottom:16px; }
+    .card h3{ margin:0 0 10px; color:var(--azul-escuro); }
+    .card p{ margin:0 0 8px; }
+
+    /* CONTATO / CADASTRO */
+    .contato{ padding:80px 5%; text-align:center; background:#fff; }
+    .contato h2{ margin:0 0 10px; color:var(--azul-escuro); font-size:2.2rem; }
+    .contato p{ margin:0 auto 14px; max-width: 900px; }
+
+    .form-cadastro{
+      max-width:900px;
+      margin:26px auto 0;
+      text-align:left;
+      background:#fff;
+      border-radius:14px;
+      padding:24px;
+      box-shadow:0 10px 25px rgba(0,0,0,0.08);
+      border:1px solid rgba(10,35,66,0.12);
+    }
+    .form-grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:14px;
+    }
+    .form-cadastro label{
+      display:grid;
+      gap:8px;
+      font-weight:800;
+      color:var(--azul-escuro);
+    }
+    .form-cadastro input,
+    .form-cadastro select,
+    .form-cadastro textarea{
+      width:100%;
+      padding:12px 12px;
+      border-radius:10px;
+      border:1px solid rgba(10,35,66,0.25);
+      outline:none;
+      font:inherit;
+    }
+    .form-cadastro input:focus,
+    .form-cadastro select:focus,
+    .form-cadastro textarea:focus{
+      border-color:var(--amarelo);
+      box-shadow:0 0 0 4px rgba(255,204,0,0.25);
+    }
+
+    .form-actions{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:14px;
+      align-items:center;
+    }
+    .btn-enviar{
+      background:var(--azul-escuro);
+      color:#fff;
+      border:none;
+      border-radius:10px;
+      padding:14px 18px;
+      font-weight:900;
+      cursor:pointer;
+    }
+    .btn-enviar:hover{ filter:brightness(1.08); }
+
+    .btn-wpp{
+      background:var(--verde-whatsapp);
+      color:#fff;
+      text-decoration:none;
+      border-radius:10px;
+      padding:14px 18px;
+      font-weight:900;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+    }
+    .btn-wpp:hover{ filter:brightness(1.05); }
+
+    .form-status{ margin-top:10px; color:#1f2937; font-weight:800; }
+    .hp{ display:none; }
+
+    .mini-lgpd{
+      margin-top:10px;
+      font-size:.95rem;
+      color:#374151;
+      font-weight:600;
+    }
+
+    .qr-area{
+      margin-top:34px;
+      padding:18px;
+      border:2px solid var(--azul-escuro);
+      display:inline-block;
+      border-radius:15px;
+    }
+    .qr-area img{ width:200px; height:200px; }
+
+    footer{ background:var(--azul-escuro); color:#fff; padding:28px 5%; text-align:center; }
+
+    .float-whats{
+      position:fixed;
+      bottom:28px;
+      right:28px;
+      background:var(--verde-whatsapp);
+      width:64px;
+      height:64px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      font-size:34px;
+      box-shadow:2px 5px 15px rgba(0,0,0,0.3);
+      z-index:1000;
+    }
+
+    @media (max-width: 768px){
+      header{ padding:14px 4%; }
+      .hero{ padding:90px 5% 60px; }
+      .hero h1{ font-size:2.25rem; }
+      .hero p{ font-size:1.1rem; }
+      .logo-text{ font-size:18px; letter-spacing:0.4px; }
+      .whats-topo{ font-size:14px; }
+      .form-grid{ grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="logo-container">
+      <div class="sparks" aria-hidden="true">
+        <span class="spark s1"></span>
+        <span class="spark s2"></span>
+        <span class="spark s3"></span>
+        <span class="spark s4"></span>
+        <span class="spark s5"></span>
+        <span class="ember e1"></span>
+        <span class="ember e2"></span>
+        <span class="ember e3"></span>
+        <span class="ember e4"></span>
+      </div>
+
+      <img src="logo.png" alt="Logo Itajaimetal">
+      <span class="logo-text">ITAJAIMETAL</span>
+    </div>
+
+    <div class="whats-topo">
+      <i class="fab fa-whatsapp"></i> (47) 99246-0045
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1>Excelência em Usinagem Industrial</h1>
+    <p>Torno Mecânico, Soldas Especiais e Prototipagem 3D.</p>
+
+    <div class="hero-actions">
+      <a href="https://wa.me/5547992460045?text=Olá%20Valmar,%20gostaria%20de%20um%20orçamento."
+         class="btn btn-whats">
+        <i class="fab fa-whatsapp"></i> Orçar no WhatsApp
+      </a>
+      <a href="#cadastro" class="btn btn-outline">
+        <i class="fas fa-clipboard-list"></i> Cadastro / Contato
+      </a>
+    </div>
+  </section>
+
+  <section class="servicos">
+    <h2>Nossos Serviços</h2>
+
+    <div class="grid-servicos">
+      <div class="card">
+        <i class="fas fa-tools"></i>
+        <h3>Torno Mecânico</h3>
+        <p>Fabricação e recuperação de eixos, buchas e peças de alta precisão.</p>
+      </div>
+
+      <div class="card">
+        <i class="fas fa-fire"></i>
+        <h3>Solda Técnica</h3>
+        <p>Soldas MIG, TIG e Elétrica (Inox, Alumínio e Aço).</p>
+      </div>
+
+      <div class="card">
+        <i class="fas fa-cube"></i>
+        <h3>Prototipagem 3D</h3>
+        <p>Desenvolvimento de modelos e peças funcionais em impressão 3D.</p>
+      </div>
+
+      <div class="card">
+        <i class="fas fa-wrench"></i>
+        <h3>Reparo de Peças</h3>
+        <p>Manutenção e recuperação de componentes mecânicos diversos.</p>
+        <p>Troca de óleo e filtros, verificação de freios e vazamentos.</p>
+        <p>Troca de periféricos do motor.</p>
+      </div>
+
+      <div class="card">
+        <i class="fas fa-truck-pickup"></i>
+        <h3>Socorro Mecânico</h3>
+        <p>Socorro em Motores Diesel e Sistema Elétrico.</p>
+        <p>Manutenção preventiva de motores diesel estacionários (geradores).</p>
+        <p>Verificação de alternadores e baterias.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="contato" id="cadastro">
+    <h2>Cadastro / Solicitar Contato</h2>
+    <p>Preencha seus dados e descreva o serviço. Você pode enviar por e-mail e/ou pelo WhatsApp.</p>
+
+    <form class="form-cadastro" id="formCadastro" autocomplete="on">
+      <input type="text" name="website" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
+
+      <div class="form-grid">
+        <label>
+          Nome*
+          <input name="nome" required placeholder="Seu nome">
+        </label>
+
+        <label>
+          WhatsApp*
+          <input name="whatsapp" required placeholder="(47) 9xxxx-xxxx">
+        </label>
+
+        <label>
+          E-mail*
+          <input name="email" type="email" required placeholder="seuemail@exemplo.com">
+        </label>
+
+        <label>
+          Serviço*
+          <select name="servico" required>
+            <option value="">Selecione…</option>
+            <option>Torno Mecânico</option>
+            <option>Solda Técnica</option>
+            <option>Prototipagem 3D</option>
+            <option>Reparo de Peças</option>
+            <option>Socorro Mecânico</option>
+            <option>Outro</option>
+          </select>
+        </label>
+
+        <label>
+          Empresa (opcional)
+          <input name="empresa" placeholder="Nome da empresa">
+        </label>
+
+        <label>
+          Cidade (opcional)
+          <input name="cidade" placeholder="Itajaí - SC">
+        </label>
+      </div>
+
+      <label style="margin-top:14px;">
+        Mensagem*
+        <textarea name="mensagem" required rows="5" placeholder="Descreva o serviço, medidas, material, urgência, etc."></textarea>
+      </label>
+
+      <div class="form-actions">
+        <button class="btn-enviar" type="submit">Enviar por E-mail</button>
+
+        <a class="btn-wpp" id="btnWhats" target="_blank" rel="noopener">
+          <i class="fab fa-whatsapp"></i> Enviar pelo WhatsApp
+        </a>
+      </div>
+
+      <p class="mini-lgpd">
+        Ao enviar, você concorda em ser contatado pela Itajaimetal para retorno do seu pedido.
+      </p>
+
+      <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+    </form>
+
+    <div class="qr-area">
+      <p><strong>Ou acesse nosso WhatsApp pelo QR Code:</strong></p>
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://wa.me/5547992460045" alt="QR Code Itajaimetal">
+    </div>
+
+    <p style="margin-top:16px;font-weight:800;color:var(--azul-escuro);">
+      <i class="fas fa-phone"></i> (47) 99246-0045 | Itajaí - SC
+    </p>
+  </section>
+
+  <footer>
+    <p>&copy; 2026 Itajaimetal Usinagem - Precisão e Confiança.</p>
+  </footer>
+
+  <a href="https://wa.me/5547992460045" class="float-whats" target="_blank" rel="noopener" aria-label="Abrir WhatsApp">
+    <i class="fab fa-whatsapp"></i>
+  </a>
+
+  <script>
+    const form = document.getElementById('formCadastro');
+    const statusEl = document.getElementById('formStatus');
+    const btnWhats = document.getElementById('btnWhats');
+
+    function buildWhatsLink(data){
+      const phone = "5547992460045";
+      const text =
+`Olá! Vim pelo site Itajaimetal.
+
+Nome: ${data.nome || "-"}
+WhatsApp: ${data.whatsapp || "-"}
+E-mail: ${data.email || "-"}
+Serviço: ${data.servico || "-"}
+Empresa: ${data.empresa || "-"}
+Cidade: ${data.cidade || "-"}
+
+Mensagem:
+${data.mensagem || "-"}`;
+      return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+    }
+
+    function currentFormData(){
+      const fd = new FormData(form);
+      return Object.fromEntries(fd.entries());
+    }
+
+    function refreshWhats(){
+      const data = currentFormData();
+      btnWhats.href = buildWhatsLink(data);
+    }
+
+    refreshWhats();
+    form.addEventListener('input', refreshWhats);
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      statusEl.textContent = "Enviando por e-mail…";
+
+      const data = currentFormData();
+      refreshWhats();
+
+      try{
+        const resp = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const out = await resp.json().catch(() => ({}));
+        if(!resp.ok || !out.ok){
+          throw new Error(out.error || 'Erro no envio.');
+        }
+
+        statusEl.textContent = "Enviado com sucesso! Se preferir, você também pode enviar pelo WhatsApp.";
+        form.reset();
+        refreshWhats();
+      }catch(err){
+        statusEl.textContent = "Não consegui enviar por e-mail agora. Use o botão do WhatsApp ou tente novamente.";
+      }
+    });
+  </script>
+
+</body>
+</html>

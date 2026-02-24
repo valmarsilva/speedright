@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!doctype html>
 <html lang="pt-BR">
   <head>
@@ -33,4 +34,144 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
+=======
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Itajaimetal Usinagem | Torno, Solda e Prototipagem 3D</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Estilo Profissional Industrial */
+        :root {
+            --azul-escuro: #0a2342;
+            --amarelo: #ffcc00;
+            --cinza-claro: #f4f4f4;
+            --verde-whatsapp: #25d366;
+            --fonte-principal: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body { font-family: var(--fonte-principal); margin: 0; padding: 0; color: #333; line-height: 1.6; }
+        
+        header { background: var(--azul-escuro); color: white; padding: 20px 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; border-bottom: 4px solid var(--amarelo); }
+        .logo { font-size: 1.7rem; font-weight: 900; letter-spacing: -1px; }
+
+        .hero { 
+            background: linear-gradient(rgba(10, 35, 66, 0.8), rgba(10, 35, 66, 0.8)), url('https://images.unsplash.com/photo-1537462715879-360eeb61a0ad?auto=format&fit=crop&w=1350&q=80');
+            background-size: cover; background-position: center;
+            color: white; padding: 120px 5% 80px; text-align: center;
+        }
+        .hero h1 { font-size: 3rem; margin-bottom: 15px; }
+        .hero p { font-size: 1.4rem; margin-bottom: 35px; color: var(--amarelo); font-weight: 500; }
+
+        .btn-whats { 
+            background-color: var(--verde-whatsapp); color: white; padding: 20px 40px; 
+            text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 1.2rem;
+            display: inline-flex; align-items: center; gap: 12px; transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .btn-whats:hover { transform: scale(1.05); background-color: #1ebd5b; }
+
+        .servicos { padding: 80px 5%; background: var(--cinza-claro); text-align: center; }
+        .servicos h2 { margin-bottom: 50px; color: var(--azul-escuro); font-size: 2.2rem; }
+        
+        .grid-servicos { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 25px; }
+        .card { background: white; padding: 40px 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.3s; border-bottom: 5px solid transparent; }
+        .card:hover { border-bottom-color: var(--amarelo); transform: translateY(-10px); }
+        .card i { font-size: 3rem; color: var(--azul-escuro); margin-bottom: 20px; }
+        .card h3 { margin-bottom: 15px; color: var(--azul-escuro); }
+
+        .contato { padding: 80px 5%; text-align: center; background: white; }
+        .qr-area { margin-top: 40px; padding: 20px; border: 2px solid var(--azul-escuro); display: inline-block; border-radius: 15px; }
+        .qr-area img { width: 200px; height: 200px; }
+
+        footer { background: var(--azul-escuro); color: white; padding: 30px; text-align: center; }
+
+        /* Botão Flutuante */
+        .float-whats { position: fixed; bottom: 30px; right: 30px; background: var(--verde-whatsapp); width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 35px; box-shadow: 2px 5px 15px rgba(0,0,0,0.3); z-index: 1000; }
+
+        @media (max-width: 768px) { .hero h1 { font-size: 2.2rem; } .hero p { font-size: 1.1rem; } }
+    </style>
+</head>
+<body>
+
+<header>
+    <header>
+  <div class="logo-container">
+    <img src="logo.png" alt="Logo Itajaimetal" style="width:50px; height:auto; margin-right:10px;">
+    <span style="font-size:24px; font-weight:bold;">ITAJAIMETAL</span>
+  </div>
+  <div class="whats-topo">
+    <i class="fab fa-whatsapp"></i> (47) 99246-0045
+  </div>
+</header>
+
+</header>
+
+<section class="hero">
+    <h1>Excelência em Usinagem Industrial</h1>
+    <p>Torno Mecânico, Soldas Especiais e Prototipagem 3D.</p>
+    <a href="https://wa.me/5547992460045?text=Olá Valmar, gostaria de um orçamento." class="btn-whats">
+        <i class="fab fa-whatsapp"></i> SOLICITE SEU ORÇAMENTO 
+    </a>
+</section>
+
+<section class="servicos">
+    <h2>Nossos Serviços</h2>
+    <div class="grid-servicos">
+        <div class="card">
+            <i class="fas fa-tools"></i>
+            <h3>Torno Mecânico</h3>
+            <p>Fabricação e recuperação de eixos, buchas e peças de alta precisão.</p>
+        </div>
+        <div class="card">
+            <i class="fas fa-fire-alt"></i>
+            <h3>Solda Técnica</h3>
+            <p>Trabalhamos com soldas MIG, TIG e Elétrica (Inox, Alumínio e Aço).</p>
+        </div>
+        <div class="card">
+            <i class="fas fa-microchip"></i>
+            <h3>Prototipagem 3D</h3>
+            <p>Desenvolvimento de modelos e peças funcionais em impressão 3D.</p>
+        </div>
+        <div class="card">
+            <i class="fas fa-hammer"></i>
+            <h3>Reparo de Peças</h3>
+            <p>Manutenção e recuperação de componentes mecânicos diversos.</p>
+             <p> Troca de óleo e filtros ,verificação de freios, vazamentos</p>
+              <p>troca de periféricos do motor</p> 
+        </div>
+          <div class="card">
+            <i class="fas fa-hammer"></i>
+            <h3>Socorro Mecânico</h3>
+            <p>Socorro Mecânico em Motores Diesel e Sistema Elétrico.</p>
+            <p>Manutenção Preventiva de motores diesel estacionários(geradores).</p>
+            <p>Verificação de alternadores e baterias</p>
+        </div>
+    </div>
+</section>
+
+<section class="contato">
+    <h2>Contato Direto</h2>
+    <p>Entre em contato <strong>resolveremos</strong>  seu problema técnico o mais breve  possível.</p>
+    
+    <p><i class="fas fa-phone"></i> (47) 99246-0045 | Itajaí - SC</p>
+    
+    <div class="qr-area">
+        <p><strong>Acesse nosso WhatsApp pelo QR Code:</strong></p>
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://wa.me/5547992460045" alt="QR Code Itajaimetal">
+    </div>
+</section>
+
+<footer>
+    <p>&copy; 2024 Itajaimetal Usinagem - Precisão e Confiança.</p>
+</footer>
+
+<a href="https://wa.me/5547992460045" class="float-whats" target="_blank">
+    <i class="fab fa-whatsapp"></i>
+</a>
+
+</body>
+>>>>>>> 3066bb1 (Atualizações do site)
 </html>
